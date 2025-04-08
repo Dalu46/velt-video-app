@@ -9,7 +9,7 @@ import {
   useCommentModeState,
   useVeltClient,
 } from "@veltdev/react";
-import { Player } from "video-react";
+// import { Player } from "video-react";
 import VeltDocument from "./VeltDocument";
 
 export default function VideoComponent() {
@@ -230,12 +230,6 @@ export default function VideoComponent() {
         </div>
 
         <div className="mt-4 flex">
-          <Player
-            playsInline
-            poster="/assets/poster.png"
-            src="https://media.w3.org/2010/05/sintel/trailer_hd.mp4"
-          />
-          <div>
             <h1 className="text-xl font-bold">Big Buck Bunny</h1>
             <div className="flex items-center mt-2 text-sm text-muted-foreground">
               <span>123,456 views</span>
