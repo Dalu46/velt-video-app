@@ -250,6 +250,5 @@ export default function VideoComponent() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
