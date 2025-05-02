@@ -1,6 +1,5 @@
 'use client'
-import {  useSetDocumentId, VeltCommentTool, VeltPresence } from '@veltdev/react';
-import { useEffect, useState } from 'react';
+import {  useSetDocumentId, VeltCommentTool } from '@veltdev/react';
 
 export default function YourDocument() {
 

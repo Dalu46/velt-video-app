@@ -5,6 +5,7 @@
 "use client";
 import { useIdentify } from "@veltdev/react";
 import { useState } from "react";
+import Image from 'next/image';
 
 export default function AuthComponent() {
   const userService = () => {
@@ -19,7 +20,7 @@ export default function AuthComponent() {
     };
   };
 
-  let yourAuthenticatedUser = userService();
+  const yourAuthenticatedUser = userService();
 
   // 2) Fetch the relevant User info from yourAuthenticatedUser
   const {
@@ -46,12 +47,12 @@ export default function AuthComponent() {
   //3) Pass the user object to the SDK
   useIdentify(veltUser);
 
-  let [user, setUser] = useState(veltUser);
+  const [user] = useState(veltUser);
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <span>{user?.name}</span>
-      <img
+      <Image
         src={user?.photoUrl}
         alt={user?.name}
         style={{

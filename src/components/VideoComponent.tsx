@@ -1,4 +1,6 @@
 import { Search } from "lucide-react";
+import { RefObject } from 'react';
+import Video from 'next/video';
 import AuthComponent from "./AuthComponent";
 import React, { useEffect, useState, useRef } from "react";
 import {
@@ -11,6 +13,18 @@ import {
 } from "@veltdev/react";
 // import { Player } from "video-react";
 import VeltDocument from "./VeltDocument";
+
+interface HTMLVideoElementWithCurrentTime extends HTMLVideoElement {
+  currentTime: number;
+  pause: () => void;
+  paused: boolean;
+}
+interface TimelineCommentDetail {
+  location?: {
+    currentMediaPosition?: number;
+    // Add other properties of your 'location' object if they exist
+  };
+}
 
 export default function VideoComponent() {
   const { client } = useVeltClient();
@@ -42,9 +56,9 @@ export default function VideoComponent() {
       video.removeEventListener("pause", () => setIsPlaying(false));
       video.removeEventListener("play", () => setIsPlaying(true));
     };
-  }, []);
+  }, [videoRef]);
 
-  const handleSeek = (event: any) => {
+  const handleSeek = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const video = videoRef.current;
     const progressBar = progressBarRef.current;
     if (!video || !progressBar) return;
@@ -74,7 +88,7 @@ export default function VideoComponent() {
 
   const setLocation = () => {
     if (videoRef.current && client) {
-      let location = {
+      const location = {
         id: secondsToReadableTime(videoRef.current.currentTime),
         locationName: secondsToReadableTime(videoRef.current.currentTime),
         currentMediaPosition: videoRef.current.currentTime,
@@ -124,33 +138,36 @@ export default function VideoComponent() {
   //     return () => document.removeEventListener("keydown", onSpaceKey);
   //   }, []);
 
-  const handleCommentClick = (event: any) => {
-    const { detail } = event;
-    if (detail && videoRef.current) {
-      videoRef.current.currentTime = detail.location.currentMediaPosition;
+  const handleCommentClick = (
+    event: React.MouseEvent<HTMLElement, MouseEvent> & { detail?: TimelineCommentDetail }
+  ) => {
+    const video = videoRef.current as HTMLVideoElementWithCurrentTime | null;
+    const customDetail = (event as any).detail as TimelineCommentDetail | undefined;
+  
+    if (customDetail?.location?.currentMediaPosition !== undefined && video) {
+      video.currentTime = customDetail.location.currentMediaPosition;
       setLocation();
       updateCustomTimeline();
     }
   };
 
-  const onTimelineCommentClick = (event: any) => {
+  const onTimelineCommentClick = (
+    event: React.MouseEvent<HTMLElement, MouseEvent> & { detail?: TimelineCommentDetail }
+  ) => {
     if (event) {
-      const { location } = event.detail || {};
-      if (videoRef.current) {
-        videoRef.current.pause();
+      const { location } = (event as any).detail || {};
+  
+      const video = videoRef.current as HTMLVideoElementWithCurrentTime | null;
+      if (video) {
+        video.pause();
       }
-      if (location) {
-        // const { currentMediaPosition } = location;
-        if (videoRef.current?.paused) {
-          // Pause the player
-          //   togglePlayPause()
-
-          // Seek to the given comment media position
-          videoRef.current.currentTime = location.currentMediaPosition;
-
-          // Set the Velt Location to the clicked comment location
-          client.setLocation(location);
-        }
+  
+      if (location?.currentMediaPosition !== undefined && video?.paused) {
+        // Seek to the given comment media position
+        video.currentTime = location.currentMediaPosition;
+  
+        // Set the Velt Location to the clicked comment location
+        client.setLocation(location);
       }
     }
   };
@@ -175,7 +192,7 @@ export default function VideoComponent() {
         handleCommentClick
       );
     };
-  }, []);
+  }, [handleCommentClick]);
 
   return (
     <div className="flex flex-col w-full h-full max-w-6xl mx-auto">
@@ -193,7 +210,7 @@ export default function VideoComponent() {
 
       <div className="w-full mt-6 px-4">
         <div className="relative w-full aspect-video bg-muted rounded-lg overflow-hidden">
-          <video
+          <Video
             id="videoPlayerId"
             ref={videoRef}
             src="/video/main-video.mp4"
@@ -248,6 +265,7 @@ export default function VideoComponent() {
             <VeltCommentsSidebar onCommentClick={handleCommentClick} />
             <VeltSidebarButton />
           </div>
+          {isPlaying ? <p>Video is playing</p> : <p>Video is paused</p>}
         </div>
       </div>
   );
