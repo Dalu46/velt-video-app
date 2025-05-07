@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
-import { RefObject } from 'react';
-import Video from 'next/video';
+import { RefObject } from "react";
+import Video from "next/video";
 import AuthComponent from "./AuthComponent";
 import React, { useEffect, useState, useRef } from "react";
 import {
@@ -139,11 +139,15 @@ export default function VideoComponent() {
   //   }, []);
 
   const handleCommentClick = (
-    event: React.MouseEvent<HTMLElement, MouseEvent> & { detail?: TimelineCommentDetail }
+    event: React.MouseEvent<HTMLElement, MouseEvent> & {
+      detail?: TimelineCommentDetail;
+    }
   ) => {
     const video = videoRef.current as HTMLVideoElementWithCurrentTime | null;
-    const customDetail = (event as any).detail as TimelineCommentDetail | undefined;
-  
+    const customDetail = (event as any).detail as
+      | TimelineCommentDetail
+      | undefined;
+
     if (customDetail?.location?.currentMediaPosition !== undefined && video) {
       video.currentTime = customDetail.location.currentMediaPosition;
       setLocation();
@@ -152,20 +156,22 @@ export default function VideoComponent() {
   };
 
   const onTimelineCommentClick = (
-    event: React.MouseEvent<HTMLElement, MouseEvent> & { detail?: TimelineCommentDetail }
+    event: React.MouseEvent<HTMLElement, MouseEvent> & {
+      detail?: TimelineCommentDetail;
+    }
   ) => {
     if (event) {
       const { location } = (event as any).detail || {};
-  
+
       const video = videoRef.current as HTMLVideoElementWithCurrentTime | null;
       if (video) {
         video.pause();
       }
-  
+
       if (location?.currentMediaPosition !== undefined && video?.paused) {
         // Seek to the given comment media position
         video.currentTime = location.currentMediaPosition;
-  
+
         // Set the Velt Location to the clicked comment location
         client.setLocation(location);
       }
@@ -220,7 +226,7 @@ export default function VideoComponent() {
           >
             <source src="/video/main-video.mp4" type="video/mp4" />
             Your browser does not support the video tag.
-          </video>
+          </Video>
 
           <div
             className="absolute bottom-0 left-0 w-full h-2 bg-gray-200 cursor-pointer"
@@ -245,16 +251,17 @@ export default function VideoComponent() {
             onTimelineCommentClick={onTimelineCommentClick}
           />
         </div>
-
         <div className="mt-4 flex">
-            <h1 className="text-xl font-bold">Big Buck Bunny</h1>
-            <div className="flex items-center mt-2 text-sm text-muted-foreground">
-              <span>123,456 views</span>
-              <span className="mx-2">•</span>
-              <span>Published on Apr 15, 2023</span>
-            </div>
+          <h1 className="text-xl font-bold">Big Buck Bunny</h1>
+          <div className="flex items-center mt-2 text-sm text-muted-foreground">
+            <span>123,456 views</span>
+            <span className="mx-2">•</span>
+            <span>Published on Apr 15, 2023</span>
           </div>
-
+        </div>
+        <>
+          {" "}
+          {/* Changed here */}
           <div id="comment-section" className="pl-16 pb-6">
             <VeltComments
               mode="stream"
@@ -266,7 +273,9 @@ export default function VideoComponent() {
             <VeltSidebarButton />
           </div>
           {isPlaying ? <p>Video is playing</p> : <p>Video is paused</p>}
-        </div>
+        </>{" "}
+        {/* and here */}
       </div>
+    </div>
   );
 }
